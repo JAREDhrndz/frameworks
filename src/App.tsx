@@ -35,7 +35,7 @@ interface ModalDetailCardProps {
   color: 'cyan' | 'orange' | 'emerald' | 'blue';
 }
 
-// --- DATOS EXTRAÍDOS DEL PDF CON METRICAS AÑADIDAS ---
+// --- DATOS EXTRAÍDOS DEL PDF ---
 const reportData = {
   header: {
     university: "Universidad Tecnológica de Durango",
@@ -186,17 +186,11 @@ const frameworks: Framework[] = [
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('grid');
-  // Ahora TypeScript sabe que selectedFramework es de tipo Framework o nulo
   const [selectedFramework, setSelectedFramework] = useState<Framework | null>(null);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
   useEffect(() => {
-    if (typeof document !== 'undefined' && !document.getElementById('tailwind-cdn-script')) {
-      const script = document.createElement('script');
-      script.id = 'tailwind-cdn-script';
-      script.src = 'https://cdn.tailwindcss.com';
-      document.head.appendChild(script);
-    }
+    // Solo activamos la animación, sin inyectar CSS por scripts
     const timer = setTimeout(() => setIsLoaded(true), 150);
     return () => clearTimeout(timer);
   }, []);
