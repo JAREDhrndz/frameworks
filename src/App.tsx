@@ -1,9 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Shield, ShieldAlert, Lock, Database, Code2, Layout, 
-  CheckCircle2, AlertTriangle, X, ChevronRight, Info, 
+  CheckCircle2, AlertTriangle, X, Info, 
   Activity, ServerCrash, ShieldCheck 
 } from 'lucide-react';
+
+// --- INTERFACES TYPESCRIPT ---
+interface Framework {
+  id: string;
+  name: string;
+  type: string;
+  logo: string;
+  invertLogo: boolean;
+  score: number;
+  level: string;
+  color: string;
+  hoverColor: string;
+  borderColor: string;
+  textColor: string;
+  barColor: string;
+  description: string;
+  xss: string;
+  csrf: string;
+  auth: string;
+  sql: string;
+  vuln: string;
+  prosCons: string;
+}
+
+interface ModalDetailCardProps {
+  icon: React.ReactElement;
+  title: string;
+  content: string;
+  color: 'cyan' | 'orange' | 'emerald' | 'blue';
+}
 
 // --- DATOS EXTRAÍDOS DEL PDF CON METRICAS AÑADIDAS ---
 const reportData = {
@@ -25,7 +55,7 @@ const reportData = {
   ]
 };
 
-const frameworks = [
+const frameworks: Framework[] = [
   {
     id: "laravel",
     name: "Laravel",
@@ -155,19 +185,18 @@ const frameworks = [
 ];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('grid');
-  const [selectedFramework, setSelectedFramework] = useState(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>('grid');
+  // Ahora TypeScript sabe que selectedFramework es de tipo Framework o nulo
+  const [selectedFramework, setSelectedFramework] = useState<Framework | null>(null);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
   useEffect(() => {
-    // INYECCIÓN DE TAILWIND A PRUEBA DE FALLOS PARA PROYECTOS LOCALES
     if (typeof document !== 'undefined' && !document.getElementById('tailwind-cdn-script')) {
       const script = document.createElement('script');
       script.id = 'tailwind-cdn-script';
       script.src = 'https://cdn.tailwindcss.com';
       document.head.appendChild(script);
     }
-    // Retraso ligero para permitir que CSS aplique antes de mostrar las animaciones
     const timer = setTimeout(() => setIsLoaded(true), 150);
     return () => clearTimeout(timer);
   }, []);
@@ -175,14 +204,12 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#020617] text-slate-300 font-sans selection:bg-cyan-500/30 relative overflow-hidden">
       
-      {/* Elementos Decorativos de Fondo (Estilo Cyberpunk / Dashboard) */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl opacity-50 animate-pulse"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-600/10 rounded-full blur-3xl opacity-50"></div>
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b80_1px,transparent_1px),linear-gradient(to_bottom,#1e293b80_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20"></div>
       </div>
 
-      {/* Header Fijo */}
       <header className={`relative z-20 border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-xl sticky top-0 transition-all duration-700 ease-out ${isLoaded ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4">
@@ -203,7 +230,6 @@ export default function App() {
 
       <main className="relative z-10 max-w-7xl mx-auto px-6 py-10">
         
-        {/* Sección de Resumen */}
         <section className={`mb-12 max-w-4xl transition-all duration-1000 delay-100 ease-out ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700 text-cyan-400 text-xs font-bold tracking-wide uppercase mb-6 shadow-lg shadow-cyan-900/20">
             <Activity className="w-4 h-4" /> Resumen Ejecutivo
@@ -216,7 +242,6 @@ export default function App() {
           </p>
         </section>
 
-        {/* Pestañas de Navegación */}
         <div className={`flex flex-wrap gap-2 bg-slate-900/60 p-1.5 rounded-2xl mb-10 w-fit border border-slate-800/80 backdrop-blur-sm transition-all duration-1000 delay-200 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
           {[
             { id: 'grid', icon: <Layout className="w-4 h-4" />, label: "Tarjetas de Análisis" },
@@ -236,10 +261,8 @@ export default function App() {
           ))}
         </div>
 
-        {/* Contenedor Dinámico */}
         <div className="min-h-[500px]">
           
-          {/* VISTA: TARJETAS (GRID) */}
           {activeTab === 'grid' && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-10 duration-700">
               {frameworks.map((fw) => (
@@ -248,7 +271,6 @@ export default function App() {
                   onClick={() => setSelectedFramework(fw)}
                   className={`group cursor-pointer relative p-6 rounded-2xl bg-gradient-to-br ${fw.color} bg-slate-900/40 border ${fw.borderColor} backdrop-blur-md hover:-translate-y-2 transition-all duration-300 shadow-xl ${fw.hoverColor} overflow-hidden flex flex-col h-full`}
                 >
-                  {/* Decoración de fondo tarjeta */}
                   <div className="absolute -top-10 -right-10 w-32 h-32 bg-current opacity-5 rounded-full blur-2xl transition-opacity group-hover:opacity-10" style={{ color: fw.barColor.replace('bg-', '') }}></div>
                   
                   <div className="relative z-10 flex flex-col h-full">
@@ -258,7 +280,13 @@ export default function App() {
                           src={fw.logo} 
                           alt={fw.name} 
                           className={`max-w-full max-h-full object-contain drop-shadow-lg transition-transform group-hover:scale-110 duration-300 ${fw.invertLogo ? 'invert brightness-200' : ''}`}
-                          onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
+                          onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => { 
+                            const target = e.currentTarget;
+                            target.style.display = 'none'; 
+                            if (target.nextElementSibling) {
+                              (target.nextElementSibling as HTMLElement).style.display = 'block'; 
+                            }
+                          }}
                         />
                         <Code2 className="w-8 h-8 text-slate-500 hidden" />
                       </div>
@@ -279,7 +307,6 @@ export default function App() {
                       {fw.description}
                     </p>
                     
-                    {/* Barra de Score */}
                     <div className="mt-auto pt-4 border-t border-slate-800">
                       <div className="flex justify-between text-xs mb-1.5">
                         <span className="text-slate-400 font-medium">Security Score</span>
@@ -298,7 +325,6 @@ export default function App() {
             </div>
           )}
 
-          {/* VISTA: TABLA MATRIZ */}
           {activeTab === 'table' && (
             <div className="rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-[0.98] duration-500">
               <div className="overflow-x-auto">
@@ -317,7 +343,14 @@ export default function App() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-slate-950 flex items-center justify-center p-1 border border-slate-800">
-                               <img src={fw.logo} alt={fw.name} className={`max-w-full max-h-full object-contain ${fw.invertLogo ? 'invert brightness-200' : ''}`} />
+                               <img 
+                                 src={fw.logo} 
+                                 alt={fw.name} 
+                                 className={`max-w-full max-h-full object-contain ${fw.invertLogo ? 'invert brightness-200' : ''}`}
+                                 onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                                  (e.currentTarget as HTMLImageElement).style.display = 'none';
+                                 }}
+                               />
                             </div>
                             <div>
                               <div className="font-bold text-white group-hover:text-cyan-300 transition-colors">{fw.name}</div>
@@ -340,12 +373,11 @@ export default function App() {
               </div>
               <div className="p-4 bg-slate-950/80 text-xs text-slate-400 flex items-center justify-center gap-2 border-t border-slate-800">
                 <Info className="w-4 h-4 text-cyan-500" />
-                Haz clic en la vista "Tarjetas" sobre cualquier framework para ver el reporte detallado de inyección SQL y Autenticación.
+                Haz clic en la vista "Tarjetas" sobre cualquier framework para ver el reporte detallado.
               </div>
             </div>
           )}
 
-          {/* VISTA: CONCLUSIONES */}
           {activeTab === 'conclusions' && (
             <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700">
               <div className="space-y-4">
@@ -389,7 +421,6 @@ export default function App() {
           <div 
             className={`relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-950 border-2 ${selectedFramework.borderColor} rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] animate-in zoom-in-[0.95] duration-300 flex flex-col`}
           >
-            {/* Cabecera Modal */}
             <div className={`sticky top-0 z-20 flex justify-between items-center p-6 sm:px-8 bg-slate-900/95 backdrop-blur-xl border-b ${selectedFramework.borderColor}`}>
               <div className="flex items-center gap-5">
                 <div className="w-16 h-16 bg-slate-950 rounded-2xl p-3 flex items-center justify-center border border-slate-700 shadow-inner">
@@ -412,9 +443,7 @@ export default function App() {
               </button>
             </div>
 
-            {/* Contenido Modal */}
             <div className="p-6 sm:p-8 space-y-6 relative overflow-hidden">
-              {/* Marca de agua de fondo */}
               <Shield className={`absolute top-20 right-10 w-96 h-96 ${selectedFramework.textColor} opacity-5 pointer-events-none`} />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
@@ -442,9 +471,9 @@ export default function App() {
   );
 }
 
-// Componente para las tarjetas del Modal
-function ModalDetailCard({ icon, title, content, color }) {
-  const colorStyles = {
+// COMPONENTE TIPADO CON TYPESCRIPT
+function ModalDetailCard({ icon, title, content, color }: ModalDetailCardProps) {
+  const colorStyles: Record<'cyan' | 'orange' | 'emerald' | 'blue', string> = {
     cyan: "text-cyan-400 bg-cyan-400/10 border-cyan-400/20",
     orange: "text-orange-400 bg-orange-400/10 border-orange-400/20",
     emerald: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
@@ -455,7 +484,7 @@ function ModalDetailCard({ icon, title, content, color }) {
     <div className="p-5 rounded-2xl bg-slate-950/50 border border-slate-800 hover:border-slate-600 transition-colors">
       <div className="flex items-center gap-3 mb-3">
         <div className={`p-2.5 rounded-xl ${colorStyles[color]} border shadow-inner`}>
-          {React.cloneElement(icon, { className: "w-5 h-5" })}
+          {React.cloneElement(icon as React.ReactElement<any>, { className: "w-5 h-5" })}
         </div>
         <h4 className="font-bold text-slate-200 text-lg">{title}</h4>
       </div>
