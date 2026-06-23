@@ -190,14 +190,24 @@ export default function App() {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
   useEffect(() => {
-    // Solo activamos la animación, sin inyectar CSS por scripts
-    const timer = setTimeout(() => setIsLoaded(true), 150);
+    // INYECCIÓN DE CSS A PRUEBA DE FALLOS PARA STACKBLITZ/VERCEL
+    const scriptId = 'tailwind-cdn-script';
+    if (typeof document !== 'undefined' && !document.getElementById(scriptId)) {
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = 'https://cdn.tailwindcss.com';
+      document.head.appendChild(script);
+    }
+    
+    // Timer para animaciones de entrada suave
+    const timer = setTimeout(() => setIsLoaded(true), 250);
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <div className="min-h-screen bg-[#020617] text-slate-300 font-sans selection:bg-cyan-500/30 relative overflow-hidden">
       
+      {/* Fondo Decorativo Cyberpunk */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl opacity-50 animate-pulse"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-600/10 rounded-full blur-3xl opacity-50"></div>
@@ -257,6 +267,7 @@ export default function App() {
 
         <div className="min-h-[500px]">
           
+          {/* VISTA DE TARJETAS */}
           {activeTab === 'grid' && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-10 duration-700">
               {frameworks.map((fw) => (
@@ -319,6 +330,7 @@ export default function App() {
             </div>
           )}
 
+          {/* VISTA DE TABLA */}
           {activeTab === 'table' && (
             <div className="rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-[0.98] duration-500">
               <div className="overflow-x-auto">
@@ -372,6 +384,7 @@ export default function App() {
             </div>
           )}
 
+          {/* VISTA DE CONCLUSIONES */}
           {activeTab === 'conclusions' && (
             <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700">
               <div className="space-y-4">
@@ -465,7 +478,7 @@ export default function App() {
   );
 }
 
-// COMPONENTE TIPADO CON TYPESCRIPT
+// COMPONENTE TIPADO CON TYPESCRIPT PARA LAS TARJETAS
 function ModalDetailCard({ icon, title, content, color }: ModalDetailCardProps) {
   const colorStyles: Record<'cyan' | 'orange' | 'emerald' | 'blue', string> = {
     cyan: "text-cyan-400 bg-cyan-400/10 border-cyan-400/20",
